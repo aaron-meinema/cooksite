@@ -1,0 +1,12 @@
+<body>
+{% if page_list %}
+    <ul>
+    {% for page in page_list %}
+        <li><a href="/page/{{ page.id }}">{{ page.name }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No polls are available.</p>
+{% endif %}
+</body>
+</html>
