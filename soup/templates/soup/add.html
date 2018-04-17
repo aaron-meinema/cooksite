@@ -1,0 +1,20 @@
+{% extends "soup/base.html" %}
+{% block content %}
+<h1>Add page</h1>
+
+<form action="/add/{{ page.id }}" method="post">
+<input type="text" name="page">
+{% csrf_token %}
+<select name="site">
+{% for site in site_list %}
+    <option value="{{ site.id }}">{{ site.name }}</option>
+{% endfor %}
+</select>
+<input type="submit" value="Vote" />
+</form>
+{% if selected_page %}
+    <p>{{ selected_page }}</p>
+{% else %}
+    <p>oke</p>
+{% endif %}
+{% endblock %}

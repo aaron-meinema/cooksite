@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% if title %}
+        <title>{{ title }}</title>
+    {% else %}
+        <title>cooksite</title>
+    {% endif %}
+</head>
+<body>
+{% if page_list %}
+    <ul>
+    {% for page in page_list %}
+        <li><a href="/page/{{ page.id }}">{{ page.name }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No polls are available.</p>
+{% endif %}
+{% block content %}{% endblock %}
+<footer>
+
+</footer>
+</html>
