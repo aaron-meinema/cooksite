@@ -7,18 +7,39 @@
     {% else %}
         <title>cooksite</title>
     {% endif %}
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'Bootstrap/css/bootstrap.min.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'main/style.css' %}" />
+    <script src='Bootstrap/js/bootstrap.min.js'></script>
 </head>
 <body>
+<div class="container-fluid">
+<div class="row">
+<div class="col-2">
 {% if page_list %}
-    <ul>
-    {% for page in page_list %}
-        <li><a href="/page/{{ page.id }}">{{ page.name }}</a></li>
-    {% endfor %}
+    <ul class="nav flex-column nav-pills">
+        {% if home %}
+            <li class="nav-item"><a class="nav-link active" href="/">Home</a></li>
+         {% else %}
+            <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+        {% endif %}
+        
+        <li class="nav-item"><a class="nav-link" href="/add">Add new page</a></li>
+        {% for page in page_list %}
+            <li class="nav-item"><a class="nav-link" href="/page/{{ page.id }}">{{ page.name }}</a></li>
+        {% endfor %}
     </ul>
+    </div>
+    <div class="col-10">
 {% else %}
     <p>No polls are available.</p>
 {% endif %}
+
 {% block content %}{% endblock %}
+    </div>
+</div>
+</div>
+</body>
 <footer>
 
 </footer>
