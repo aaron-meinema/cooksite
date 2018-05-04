@@ -59,4 +59,5 @@ def page(request, page_id):
     context['display_content'] = display_content
     context['rendered_page'] = rendered_page
     context['active'] = page_id
+    context['title'] = Page.objects.get(id=page_id).name.__str__() 
     return render(request, 'soup/pages.html', context,)
