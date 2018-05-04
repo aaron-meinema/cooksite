@@ -1,0 +1,8 @@
+{% extends "soup/base.html" %}
+{% block content %}
+{% if display_content %}
+    {% for content in display_content %}
+        <div id="{{ content.type }}">{{ content.content|safe }}</div>
+    {% endfor %}
+{% endif %}
+{% endblock %}
