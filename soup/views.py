@@ -5,11 +5,12 @@ from .scrape import smulweb_ingredients, smulweb_instructions, title
 page_list = Page.objects.all()
 context ={
     'page_list': page_list,
+    'active': 'none'
 }
 
 
 def index(request):
-    context['home'] = 'true'
+    context['active'] = 'home'
     context['title'] = 'this is the index page'
     return render(request, 'soup/index.html', context)
 
@@ -18,7 +19,7 @@ def add(request):
     site_list = Site.objects.all()
     context['title'] = 'add page here'
     context['site_list'] = site_list
-    context['add'] = 'true'
+    context['active'] = 'add'
 
     try:
         selected_page = request.POST['page']
@@ -57,4 +58,5 @@ def page(request, page_id):
     display_content = Content.objects.filter(page_id_id=page_id)
     context['display_content'] = display_content
     context['rendered_page'] = rendered_page
+    context['active'] = page_id
     return render(request, 'soup/pages.html', context,)

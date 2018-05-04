@@ -18,15 +18,22 @@
 <div class="col-2">
 {% if page_list %}
     <ul class="nav flex-column nav-pills">
-        {% if home %}
+        {% if active == "home" %}
             <li class="nav-item"><a class="nav-link active" href="/">Home</a></li>
-         {% else %}
+            <li class="nav-item"><a class="nav-link" href="/add">Add new page</a></li>
+         {% elif active == "add" %}
             <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+            <li class="nav-item"><a class="nav-link active" href="/add">Add new page</a></li>
+        {% else %}
+            <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="/add">Add new page</a></li>
         {% endif %}
-        
-        <li class="nav-item"><a class="nav-link" href="/add">Add new page</a></li>
         {% for page in page_list %}
-            <li class="nav-item"><a class="nav-link" href="/page/{{ page.id }}">{{ page.name }}</a></li>
+            {% if active == page.id %}
+                <li class="nav-item"><a class="nav-link active" href="/page/{{ page.id }}">{{ page.name }}</a></li>
+            {% else %}
+                <li class="nav-item"><a class="nav-link" href="/page/{{ page.id }}">{{ page.name }}</a></li>
+            {% endif %}
         {% endfor %}
     </ul>
     </div>
