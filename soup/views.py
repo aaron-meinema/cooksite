@@ -30,7 +30,7 @@ def add(request):
         #smulweb
         if selected_site == "1":
             site = selected_page
-            ingredients = smulweb_ingredients(site, "div.ingredienten")
+            ingredients = smulweb_ingredients(site)
             instructions = smulweb_instructions(site, "div.itemprop_instructions")
             the_title = title(site)
             page = Page(name=the_title)
