@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404, render
 from .models import Site, Page, Content
-from .scrape import smulweb_ingredients, smulweb_instructions, title
+from .scrape import SmulWeb
 
 page_list = Page.objects.all()
 context ={

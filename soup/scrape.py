@@ -2,7 +2,6 @@ from bs4 import BeautifulSoup
 import requests
 
 
-
 class _Scrape:
 
     def __init__(self, url):
@@ -19,17 +18,49 @@ class _Scrape:
         contents = select.contents
         return contents
 
-    def _a_unwrap(self, select_tag):
-        for non_tag in select_tag.select("a"):
+    @staticmethod
+    def _a_unwrap(select_tag):
+        for _ in select_tag.select("a"):
             select_tag.a.unwrap()
 
-    def _script_decompose(self, select_tag):
-        for non_tag in select_tag.select("script"):
+    @staticmethod
+    def _div_unwrap(select_tag):
+        for _ in select_tag.select("div"):
+            select_tag.div.unwrap()
+
+    @staticmethod
+    def _p_unwrap(select_tag):
+        for _ in select_tag.select("p"):
+            select_tag.p.unwrap()
+
+    @staticmethod
+    def _script_decompose(select_tag):
+        for _ in select_tag.select("script"):
             select_tag.script.decompose()
 
-    def _h3_decompose(self, select_tag):
-        for non_tag in select_tag.select("h3"):
+    @staticmethod
+    def _h3_decompose(select_tag):
+        for _ in select_tag.select("h3"):
             select_tag.h3.decompose()
+
+    @staticmethod
+    def _br_extract(select_tag):
+        for _ in select_tag.select("br"):
+            select_tag.br.extract()
+
+    @staticmethod
+    def _everything(contents):
+        everything = ""
+        for content in contents:
+            everything += str(content)
+        return everything
+
+    def split_lines(self, input):
+        soup_list = input.splitlines()
+        dictionary = dict()
+        for item in soup_list:
+            dictionary[str(item)] = "p"
+        return dictionary
 
 
 class SmulWeb(_Scrape):
@@ -39,49 +70,33 @@ class SmulWeb(_Scrape):
 
     def smulweb_ingredients(self):
         contents = self._select("div.ingredienten")
-        everything = ""
-        for content in contents:
-            everything += str(content)
+        everything = self._everything(contents)
         replace = BeautifulSoup(everything, 'html.parser')
         self._a_unwrap(replace)
         return str(replace)
 
+    def smulweb_instructions(self):
+        select_tag = self._select("div.itemprop_instructions")
+        everything = self._everything(select_tag)
+        new_page = BeautifulSoup(everything, 'html.parser')
+        contents = new_page.contents
+        self._everything(contents)
+        stripped = BeautifulSoup(everything, "html.parser")
+        self._script_decompose(stripped)
+        self._a_unwrap(stripped)
+        self._p_unwrap(stripped)
+        self._br_extract(stripped)
+        return str(stripped)
 
-# def smulweb_instructions(url, tag):
-#     select_tag = page.select(tag)
-#     select = select_tag[0]
-#     contents = select.contents
-#     everything = ""
-#     for content in contents:
-#         everything += content.__str__()
-#     new_page = BeautifulSoup(everything, 'html.parser')
-#     contents = new_page.contents
-#
-#     h3 = new_page.select("div.h3")
-#     for div in h3:
-#         new_h3 = new_page.new_tag("h3")
-#         new_h3.string = div.string
-#         div.replace_with(new_h3)
-#     everything = ""
-#     for content in contents:
-#         everything += content.__str__()
-#     noscript = BeautifulSoup(everything, "html.parser")
-#     for script in noscript.select("script"):
-#         noscript.script.decompose()
-#     for no_a in noscript.select("a"):
-#         noscript.a.unwrap()
-#     return noscript.__str__()
-
-#def smulweb_ingredients(url, tag):
-#    select_tag = page.select(tag)
-#    select = select_tag[0]
-#    contents = select.contents
-#    everything = ""
-#    for content in contents:
-#        everything += content.__str__()
-#    replace = BeautifulSoup(everything, 'html.parser')
-#    p_tag = replace.p
-#    for a_tag in p_tag.select("a"):
-#        p_tag.a.unwrap()
-#    return replace.__str__()
+    def split_lines(self, input):
+        soup_list = input.splitlines()
+        dictionary = dict()
+        for item in soup_list:
+            soup = BeautifulSoup(item, "html.parser")
+            if soup.find("div") is None:
+                dictionary[str(item)] = "p"
+            else:
+                self._div_unwrap(soup)
+                dictionary[str(soup)] = "h3"
+        return dictionary
 
