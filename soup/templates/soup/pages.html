@@ -2,7 +2,17 @@
 {% block content %}
 {% if display_content %}
     {% for content in display_content %}
-        <div id="{{ content.type }}">{{ content.content|safe }}</div>
+        <div id="{{ content.type }}">
+        {% for line in content_lines %}
+            {% if line.content_id == content.id %}
+                {% if line.content_type == "h3" %}
+                    <h3> {{ line.content_line}} </h3></br>
+                {% else %}
+                    {{ line.content_line }} </br>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+        </div>
     {% endfor %}
 {% endif %}
 {% endblock %}

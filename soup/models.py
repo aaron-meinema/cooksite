@@ -17,7 +17,6 @@ class Page(models.Model):
 
 class Content(models.Model):
     type = models.CharField(max_length=50)
-    content = models.TextField()
     site_id = models.ForeignKey('Site', on_delete=models.CASCADE)
     page_id = models.ForeignKey('Page', on_delete=models.CASCADE)
 
@@ -29,3 +28,13 @@ class Content(models.Model):
 
     def from_page_content(self, foreign_id):
         return self.type == Page.objects.get(page_id=foreign_id)
+
+
+class ContentLine(models.Model):
+    content_line = models.TextField()
+    content_type = models.CharField(max_length=3)
+    content = models.ForeignKey('Content', on_delete=models.CASCADE)
+    line_number = models.IntegerField()
+
+    def __str__(self):
+        return self.content_line

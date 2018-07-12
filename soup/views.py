@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404, render
-from .models import Site, Page, Content
+from .models import Site, Page, Content, ContentLine
 from .scrape import SmulWeb
 
 page_list = Page.objects.all()
@@ -26,38 +26,53 @@ def add(request):
     except KeyError:
         return render(request, 'soup/add.html', context)
     else:
-        selected_site = request.POST['site']
-        #smulweb
-        if selected_site == "1":
-            site = selected_page
-            ingredients = smulweb_ingredients(site)
-            instructions = smulweb_instructions(site, "div.itemprop_instructions")
-            the_title = title(site)
-            page = Page(name=the_title)
-            duplicate = 0
-            for previous in Page.objects.all():
-                if previous.name == the_title:
-                    duplicate = 1
-            if duplicate == 0:
-                page.save()
-                last_page = Page.objects.last()
-                this_site = Site.objects.get(id=1)
-                ingredients_content = Content(type="ingredients", content=ingredients, site_id=this_site, page_id=last_page)
-                instructions_content = Content(type="instructions", content=instructions, site_id=this_site, page_id=last_page)
+        selected_site = int(request.POST['site'])
+        # modular problem below 1 line
+        site = SmulWeb(selected_page)
+        the_title = str(site)
+        page = Page(name=the_title)
+        duplicate = 0
+        for title in Page.objects.all():
+            if title == the_title:
+                duplicate = 1
+        if duplicate == 0:
+            page.save()
+            last_page = Page.objects.last()
+            this_site = Site.objects.get(id=selected_site)
+            # possible modularity problem below 4 lines
+            ingredients_content = Content(type="ingredients", site_id=this_site, page_id=last_page)
+            instructions_content = Content(type="instructions", site_id=this_site, page_id=last_page)
+            ingredients_content.save()
+            instructions_content.save()
+            content_instructions = Content.objects.latest('id')
 
-                ingredients_content.save()
-                instructions_content.save()
-                context['selected_page'] = instructions
-            else:
-                context['selected_page'] = "duplicate page"
-            return render(request, 'soup/add.html', context)
+            line_number = 1
+            for line, keyword in site.split_lines(site.smulweb_instructions()).items():
+                print(line)
+                instruction_line = ContentLine(content_line=line, content_type=keyword,
+                                               content=content_instructions, line_number=line_number)
+                instruction_line.save()
+                line_number += 1
+            line_number = 1
+            for line, keyword in site.split_lines(site.smulweb_ingredients()).items():
+                print(line)
+                ingredients_line = ContentLine(content_line=line, content_type=keyword,
+                                               content_id=content_instructions.id-1, line_number=line_number)
+                ingredients_line.save()
+                line_number += 1
+            context['selected_page'] = site.smulweb_instructions()
+        else:
+            context['selected_page'] = "duplicate page"
+        return render(request, 'soup/add.html', context)
 
 
 def page(request, page_id):
     rendered_page = get_object_or_404(Page, id=page_id)
     display_content = Content.objects.filter(page_id_id=page_id)
+    content_lines = ContentLine.objects.filter(content__in=display_content)
+    context['content_lines'] = content_lines
     context['display_content'] = display_content
     context['rendered_page'] = rendered_page
     context['active'] = page_id
-    context['title'] = Page.objects.get(id=page_id).name.__str__()
+    context['title'] = str(Page.objects.get(id=page_id).name)
     return render(request, 'soup/pages.html', context,)

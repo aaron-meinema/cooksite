@@ -34,6 +34,11 @@ class _Scrape:
             select_tag.p.unwrap()
 
     @staticmethod
+    def _h3_unwrap(select_tag):
+        for _ in select_tag.select("h3"):
+            select_tag.h3.unwrap()
+
+    @staticmethod
     def _script_decompose(select_tag):
         for _ in select_tag.select("script"):
             select_tag.script.decompose()
@@ -68,12 +73,17 @@ class SmulWeb(_Scrape):
     def __init__(self, url):
         super().__init__(url)
 
+    def __str__(self):
+        return self.page.h1.contents[0][:-6]
+
     def smulweb_ingredients(self):
         contents = self._select("div.ingredienten")
         everything = self._everything(contents)
-        replace = BeautifulSoup(everything, 'html.parser')
-        self._a_unwrap(replace)
-        return str(replace)
+        stripped = BeautifulSoup(everything, 'html.parser')
+        self._a_unwrap(stripped)
+        self._br_extract(stripped)
+        self._p_unwrap(stripped)
+        return str(stripped)
 
     def smulweb_instructions(self):
         select_tag = self._select("div.itemprop_instructions")
@@ -93,10 +103,12 @@ class SmulWeb(_Scrape):
         dictionary = dict()
         for item in soup_list:
             soup = BeautifulSoup(item, "html.parser")
-            if soup.find("div") is None:
+            if soup.find("div") is None and soup.find("h3") is None:
                 dictionary[str(item)] = "p"
             else:
                 self._div_unwrap(soup)
-                dictionary[str(soup)] = "h3"
+                self._h3_unwrap(soup)
+                soup = str(soup).replace('\xa0', ' ')
+                dictionary[soup] = "h3"
         return dictionary
 
