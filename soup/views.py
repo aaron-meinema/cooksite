@@ -1,6 +1,8 @@
 from django.shortcuts import get_object_or_404, render
 from .models import Site, Page, Content, ContentLine
 from .scrape import SmulWeb
+from rest_framework import viewsets
+from .serializers import ContentSerializer, ContentLineSerializer
 
 page_list = Page.objects.all()
 context ={
@@ -76,3 +78,13 @@ def page(request, page_id):
     context['active'] = page_id
     context['title'] = str(Page.objects.get(id=page_id).name)
     return render(request, 'soup/pages.html', context,)
+
+
+class ContentViewSet(viewsets.ModelViewSet):
+    queryset = Content.objects.all()
+    serializer_class = ContentSerializer
+
+
+class ContentLineViewSet(viewsets.ModelViewSet):
+    queryset = ContentLine.objects.all()
+    serializer_class = ContentLineSerializer

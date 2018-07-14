@@ -15,8 +15,18 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from rest_framework import routers
+from soup.views import ContentViewSet, ContentLineViewSet
+
+
+router = routers.DefaultRouter()
+router.register(r'content', ContentViewSet)
+router.register(r'contentline', ContentLineViewSet)
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('soup.urls'))
+    path('', include('soup.urls')),
+    path('api/', include(router.urls)),
+    path('api-auth/',  include('rest_framework.urls', namespace='rest_framework'))
 ]
