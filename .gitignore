@@ -1,0 +1,6 @@
+#gitignore
+cooksite/my.cnf
+cooksite/secret.py
+venv/*
+*/__pycache__/
+soup/testing.py
