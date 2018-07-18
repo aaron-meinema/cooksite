@@ -24,6 +24,16 @@ class _Scrape:
             select_tag.a.unwrap()
 
     @staticmethod
+    def _strong_unwrap(select_tag):
+        for _ in select_tag.select("strong"):
+            select_tag.strong.unwrap()
+
+    @staticmethod
+    def _ul_unwrap(select_tag):
+        for _ in select_tag.select("ul"):
+            select_tag.ul.unwrap()
+
+    @staticmethod
     def _div_unwrap(select_tag):
         for _ in select_tag.select("div"):
             select_tag.div.unwrap()
@@ -112,3 +122,35 @@ class SmulWeb(_Scrape):
                 dictionary[soup] = "h3"
         return dictionary
 
+
+class LeukeRecepten(_Scrape):
+
+    def __init__(self, url):
+        super().__init__(url)
+
+    @staticmethod
+    def _li_unwrap(select_tag):
+        for _ in select_tag.select("li"):
+            select_tag.li.string.replace_with("\n " + str(select_tag.li.string))
+            select_tag.li.unwrap()
+
+    def ingredients(self):
+        contents = self._select("div.page-content__ingredients-sidebar")
+        everything = self._everything(contents)
+        stripped = BeautifulSoup(everything, 'html.parser')
+        self._div_unwrap(stripped)
+        self._ul_unwrap(stripped)
+        self._li_unwrap(stripped)
+        return str(stripped)
+
+    def split_lines(self, input):
+        soup_list = input.splitlines()
+        dictionary = dict()
+        for item in soup_list:
+            soup = BeautifulSoup(item, "html.parser")
+            if soup.find("strong") is None:
+                dictionary[str(item)] = "p"
+            else:
+                self._strong_unwrap(soup)
+                dictionary[soup] = "h3"
+        return dictionary
