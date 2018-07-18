@@ -12,6 +12,13 @@ class _Scrape:
     def __str__(self):
         return self.page.h1.contents[0]
 
+    @staticmethod
+    def select_site(id, url):
+        if id == 1:
+            return SmulWeb(url)
+        elif id == 2:
+            return LeukeRecepten(url)
+
     def _select(self, tag):
         select_tag = self.page.select(tag)
         select = select_tag[0]

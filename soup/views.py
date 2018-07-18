@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404, render
 from .models import Site, Page, Content, ContentLine
-from .scrape import SmulWeb
+from .scrape import SmulWeb, _Scrape, LeukeRecepten
 from rest_framework import viewsets
 from .serializers import ContentSerializer, ContentLineSerializer
 
@@ -29,8 +29,7 @@ def add(request):
         return render(request, 'soup/add.html', context)
     else:
         selected_site = int(request.POST['site'])
-        # modular problem below 1 line
-        site = SmulWeb(selected_page)
+        site = _Scrape.select_site(selected_site, selected_page)
         the_title = str(site)
         page = Page(name=the_title)
         duplicate = 0
