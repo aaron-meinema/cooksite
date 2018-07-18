@@ -76,7 +76,7 @@ class SmulWeb(_Scrape):
     def __str__(self):
         return self.page.h1.contents[0][:-6]
 
-    def smulweb_ingredients(self):
+    def ingredients(self):
         contents = self._select("div.ingredienten")
         everything = self._everything(contents)
         stripped = BeautifulSoup(everything, 'html.parser')
@@ -85,7 +85,7 @@ class SmulWeb(_Scrape):
         self._p_unwrap(stripped)
         return str(stripped)
 
-    def smulweb_instructions(self):
+    def instructions(self):
         select_tag = self._select("div.itemprop_instructions")
         everything = self._everything(select_tag)
         new_page = BeautifulSoup(everything, 'html.parser')

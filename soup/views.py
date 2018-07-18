@@ -41,28 +41,27 @@ def add(request):
             page.save()
             last_page = Page.objects.last()
             this_site = Site.objects.get(id=selected_site)
-            # possible modularity problem below 4 lines
-            ingredients_content = Content(type="ingredients", site_id=this_site, page_id=last_page)
-            instructions_content = Content(type="instructions", site_id=this_site, page_id=last_page)
+            ingredients_content = Content(type="ingredients", site=this_site, page=last_page)
+            instructions_content = Content(type="instructions", site=this_site, page=last_page)
             ingredients_content.save()
             instructions_content.save()
             content_instructions = Content.objects.latest('id')
 
             line_number = 1
-            for line, keyword in site.split_lines(site.smulweb_instructions()).items():
+            for line, keyword in site.split_lines(site.instructions()).items():
                 print(line)
                 instruction_line = ContentLine(content_line=line, content_type=keyword,
                                                content=content_instructions, line_number=line_number)
                 instruction_line.save()
                 line_number += 1
             line_number = 1
-            for line, keyword in site.split_lines(site.smulweb_ingredients()).items():
+            for line, keyword in site.split_lines(site.ingredients()).items():
                 print(line)
                 ingredients_line = ContentLine(content_line=line, content_type=keyword,
                                                content_id=content_instructions.id-1, line_number=line_number)
                 ingredients_line.save()
                 line_number += 1
-            context['selected_page'] = site.smulweb_instructions()
+            context['selected_page'] = site.instructions()
         else:
             context['selected_page'] = "duplicate page"
         return render(request, 'soup/add.html', context)
@@ -70,7 +69,7 @@ def add(request):
 
 def page(request, page_id):
     rendered_page = get_object_or_404(Page, id=page_id)
-    display_content = Content.objects.filter(page_id_id=page_id)
+    display_content = Content.objects.filter(page_id=page_id)
     content_lines = ContentLine.objects.filter(content__in=display_content)
     context['content_lines'] = content_lines
     context['display_content'] = display_content

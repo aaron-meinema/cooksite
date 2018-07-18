@@ -17,8 +17,8 @@ class Page(models.Model):
 
 class Content(models.Model):
     type = models.CharField(max_length=50)
-    site_id = models.ForeignKey('Site', on_delete=models.CASCADE)
-    page_id = models.ForeignKey('Page', on_delete=models.CASCADE)
+    site = models.ForeignKey('Site', on_delete=models.CASCADE)
+    page = models.ForeignKey('Page', on_delete=models.CASCADE)
 
     def __str__(self):
         return self.type
